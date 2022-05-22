@@ -13,6 +13,7 @@ beforeEach(async () => {
   //Get a list of all accounts
 
   accounts = await web3.eth.getAccounts();
+
   //Use one fo those accounts to deploy
   //the contract
 
@@ -22,7 +23,22 @@ beforeEach(async () => {
 });
 
 describe('Inbox', () => {
+  //
   it('deploys a contract', () => {
-    console.log(inbox);
+    assert.ok(inbox.options.address);
+  });
+
+  it('has a default message', async () => {
+    const message = await inbox.methods.message().call();
+    assert.equal(message, 'Hi There!');
+  });
+
+  it('can change the message', async () => {
+    await inbox.methods
+      .setMessage('Bye There!')
+      .send({ from: accounts[0], gas: '1000000' });
+
+    const message = await inbox.methods.message().call();
+    assert.equal(message, 'Bye There!');
   });
 });
